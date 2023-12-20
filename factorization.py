@@ -1,21 +1,39 @@
-#/usr/bin/env python3
+#!/usr/bin/env python3
 import sys
 
 
-def primef(n):
-    if n <= 3:
-        return int(n)
-    if n % 2 == 0:
-        return 2
-    elif n % 3 == 0:
-        return 3
-    else:
-        for i in range(5, int((n)**0.5) + 1, 6):
-            if n % i == 0:
-                return int(i)
-            if n % (i + 2) == 0:
-                return primef(n/(i+2))
-    return int(n)
+def prime_factors(n):
+    factors = []
+    while n % 2 == 0:
+        factors.append(2)
+        n = n // 2
+    for i in range(3, int(n**0.5) + 1, 2):
+        while n % i == 0:
+            factors.append(i)
+            n = n // i
+    if n > 2:
+        factors.append(n)
+    return factors
 
 
-print(primef(int(sys.argv[1])))
+if __name__ == "__main__":
+    if len(sys.argv) != 2:
+        print("Usage: python3 factors.py <file>")
+        sys.exit(1)
+
+    input_file = sys.argv[1]
+
+    try:
+        with open(input_file, 'r') as file:
+            lines = file.readlines()
+            for line in lines:
+                number = int(line.strip())
+                factors = prime_factors(number)
+                print(f"{number}={'*'.join(map(str, factors))}")
+    except FileNotFoundError:
+        print(f"File {input_file} not found.")
+        sys.exit(1)
+    except ValueError:
+        print("Invalid input in the file.")
+        sys.exit(1)
+
